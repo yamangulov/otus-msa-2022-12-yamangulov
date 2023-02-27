@@ -1,0 +1,25 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: "db-init"
+spec:
+  template:
+    metadata:
+      name: "db-init"
+    spec:
+      restartPolicy: Never
+      containers:
+        - name: post-install-job
+          image: postgres:latest
+          env:
+            - name: POSTGRES_PASSWORD
+              value: "passwd"
+          command:
+            - sh
+            - "-c"
+            - |
+              psql postgres://postgres:postgres@crud-db:5435/postgres <<'EOF'
+              create table usr (id serial primary key, username varchar, first_name varchar, last_name varchar, email varchar, phone varchar);
+              insert into usr (id, username, first_name, last_name, email, phone) values (1, 'admin', 'Andrey', 'Yamangulov', 'test@test.ru', '89999999999');
+              EOF
+  backoffLimit: 5
