@@ -1,0 +1,52 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    service: crud-service
+  name: crud-service
+  namespace: {{.Values.namespace}}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      service: crud-service
+  strategy: {}
+  template:
+    metadata:
+      labels:
+        cluster-net: "true"
+        service: crud-service
+    spec:
+      containers:
+        - env:
+            - name: SERVER_PORT
+              valueFrom:
+                configMapKeyRef:
+                  name: crud-service-config
+                  key: SERVER_PORT
+            - name: SPRING_DATASOURCE_URL
+              valueFrom:
+                configMapKeyRef:
+                  name: crud-service-config
+                  key: SPRING_DATASOURCE_URL
+            - name: SPRING_JPA_PROPERTIES_HIBERNATE_DEFAULT_SCHEMA
+              valueFrom:
+                configMapKeyRef:
+                  name: crud-service-config
+                  key: SPRING_JPA_PROPERTIES_HIBERNATE_DEFAULT_SCHEMA
+            - name: SPRING_DATASOURCE_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: crud-service-secret
+                  key: SPRING_DATASOURCE_USERNAME
+            - name: SPRING_DATASOURCE_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: crud-service-secret
+                  key: SPRING_DATASOURCE_PASSWORD
+          image: yamangulov/swagger-spring:1.0.1
+          name: crud-service
+          ports:
+            - containerPort: {{.Values.crudServicePort}}
+          resources: {}
+      restartPolicy: Always

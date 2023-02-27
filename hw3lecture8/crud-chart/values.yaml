@@ -1,0 +1,7 @@
+restName: crud-service
+crudServicePort: 8080
+dbmsName: crud-db
+ingressDbPort: 5435
+namespace: &namespace default
+host: arch.homework
+clusterIP: 192.168.49.2
